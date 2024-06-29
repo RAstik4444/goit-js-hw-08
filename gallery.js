@@ -76,18 +76,24 @@ const galleryItems = images.map(image => {
 
 gallery.append(...galleryItems);
 
+let lightboxInstance = null;
+
 gallery.addEventListener("click", (event) => {
   if (event.target.nodeName !== "IMG") {
     return;
   }
   const originalImageURL = event.target.dataset.original;
-  console.log(originalImageURL);
-    basicLightbox.create(`
+  lightboxInstance = basicLightbox.create(`
     <img src="${originalImageURL}" width="1400" height="900">
-  `).show();
+  `);
+  lightboxInstance.show();
+
+  document.addEventListener("keydown", handleKeyDown);
 });
-gallery.addEventListener("keydown", (event) => {
-    basicLightbox.create(`
-    <img src="${originalImageURL}" width="1400" height="900">
-  `).close();
-});
+
+function handleKeyDown(event) {
+  if (event.key === "Escape" && lightboxInstance && lightboxInstance.visible()) {
+    lightboxInstance.close();
+    document.removeEventListener("keydown", handleKeyDown);
+  }
+}
